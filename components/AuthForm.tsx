@@ -3,33 +3,24 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+
 import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import CustomInput from "../CustomInput";
+import { Form } from "@/components/ui/form"
+import CustomInput from "./CustomInput";
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { getLoggedInUser, signIn, signUp } from "@/lib/actions/user.actions";
-import PlaidLink from "../PlaidLink";
+import { signIn, signUp } from "@/lib/actions/user.actions";
+import PlaidLink from "./PlaidLink";
 
 const AuthForm = ({ type }: { type:string }) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  // const loggedInUser = await getLoggedInUser();
   
   const formSchema = authFormSchema(type);
    // 1. Define your form.
@@ -50,6 +41,7 @@ const AuthForm = ({ type }: { type:string }) => {
         const userData = {
           firstName: data.firstName!,
           lastName: data.lastName!,
+          name: `${data.firstName} ${data.lastName}`,
           address1: data.address1!,
           city: data.city!,
           state: data.state!,
@@ -69,6 +61,7 @@ const AuthForm = ({ type }: { type:string }) => {
           email: data.email,
           password: data.password,
         });
+
         if(response) router.push('/');
       }
     } catch (error) {
@@ -143,20 +136,22 @@ const AuthForm = ({ type }: { type:string }) => {
               <CustomInput control={form.control} name='email' label='Email' placeholder='Enter your username' />
               <CustomInput control={form.control} name='password' label='Password' placeholder='Enter your password' />
               <div className="flex flex-col gap-4">
-                <Button type="submit" disabled={isLoading} className="form-btn">{isLoading ? (
-                  <>
-                    <Loader2 size={20} className="animate-spin"/> &nbsp;
-                    Loading...
-                  </>
-                ) : type === 'sign-in'
-                  ? 'Sign In' : 'Sign Up' }
+                <Button type="submit" disabled={isLoading} className="form-btn">
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={20} className="animate-spin"/> &nbsp;
+                      Loading...
+                    </>
+                    ) : type === 'sign-in'
+                      ? 'Sign In' : 'Sign Up' }
                 </Button>
               </div>
             </form>
           </Form>
 
           <footer className="flex justify-center gap-1">
-            <p className="text-14 font-normal text-gray-600">{type === 'sign-in'
+            <p className="text-14 font-normal text-gray-600">
+              {type === 'sign-in'
               ? "Don't have an account?"
               : "Already have an account?"
               }

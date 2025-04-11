@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
 import { CountryCode, ProcessorTokenCreateRequest, ProcessorTokenCreateRequestProcessorEnum, Products } from "plaid";
 
-import { plaidClient } from "../plaid";
+import { plaidClient } from "@/lib/plaid";
 import { revalidatePath } from "next/cache";
 import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
 
@@ -241,7 +241,7 @@ export const exchangePublicToken = async ({
     //Return a success message
     return parseStringify({
       publicTokenExchange: "complete",
-    })
+    });
   } catch (error) {
     console.error("An error accurred while creating exchanging token:", error);
   }
