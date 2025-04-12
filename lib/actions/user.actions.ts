@@ -109,8 +109,6 @@ export const getLoggedInUser = async () => {
   try {
     const { account } = await createSessionClient();
     
-    // const user = await account.get();
-
     const result = await account.get();
     const user = await getUserInfo({ userId: result.$id })
 
@@ -140,7 +138,7 @@ export const createLinkToken = async(user: User) => {
         client_user_id: user.$id
       },
       client_name: `${user.firstName} ${user.lastName}`,
-      products: ['auth'] as Products[],
+      products: ['auth', 'transactions'] as Products[],
       language: 'en',
       country_codes: ['US'] as CountryCode[],
     }
@@ -244,5 +242,38 @@ export const exchangePublicToken = async ({
     });
   } catch (error) {
     console.error("An error accurred while creating exchanging token:", error);
+  }
+}
+
+export const getBanks = async ({ userId }: getBanksProps) => {
+  try {
+    const { database } = await createAdminClient();
+
+    const banks = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal('userId', [userId])]
+    )
+
+    return parseStringify(banks.documents);
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getBank = async ({ documentId }: getBankProps ) => {
+  try {
+    const { database } = await createAdminClient();
+
+    const bank = await database.listDocuments(
+      DATABASE_ID!,
+      BANK_COLLECTION_ID!,
+      [Query.equal('$id', [documentId])]
+    )
+
+    return parseStringify(bank.documents[0]);
+
+  } catch (error) {
+    console.log(error)
   }
 }
